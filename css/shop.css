@@ -1,0 +1,139 @@
+/* =========================================================
+   SHOP.CSS
+   Hanya berisi style untuk halaman Shop:
+   header halaman, grup kategori, dan kartu upgrade.
+   ========================================================= */
+
+/* ---------- HEADER HALAMAN SHOP ---------- */
+.shop-header {
+  text-align: center;
+}
+
+.shop-header h2 {
+  margin-bottom: var(--space-2);
+}
+
+/* ---------- GRUP KATEGORI ---------- */
+.shop-category {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.shop-category__title {
+  font-size: 1rem;
+  color: var(--color-coffee);
+}
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-4);
+}
+
+/* ---------- KARTU UPGRADE ---------- */
+.upgrade-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.upgrade-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.upgrade-card__icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.upgrade-card__name {
+  font-weight: 700;
+  color: var(--color-espresso);
+  font-size: 0.95rem;
+}
+
+.upgrade-card__level {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+/* Bar progress level upgrade */
+.upgrade-card__progress {
+  width: 100%;
+  height: 6px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-border);
+  overflow: hidden;
+}
+
+.upgrade-card__progress-bar {
+  height: 100%;
+  background-image: linear-gradient(
+    90deg,
+    var(--color-caramel),
+    var(--color-coffee-light)
+  );
+  border-radius: var(--radius-sm);
+  transition: width var(--transition-base);
+}
+
+.upgrade-card__income {
+  font-size: 0.8rem;
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.upgrade-card__buy-btn {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Kartu yang sudah mencapai level maksimum */
+.upgrade-card--maxed {
+  border-color: var(--color-caramel);
+}
+
+.upgrade-card--maxed .upgrade-card__buy-btn {
+  background-color: var(--color-caramel);
+  color: var(--color-espresso);
+  cursor: default;
+}
+
+/* Kartu yang masih terkunci (prasyarat belum terpenuhi) */
+.upgrade-card--locked {
+  opacity: 0.55;
+  background-color: var(--color-cream-soft);
+}
+
+.upgrade-card__requirement {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* Animasi "berhasil dibeli": cincin cahaya caramel yang memudar.
+   Class ini ditambahkan sekilas oleh shop.js sebelum kartu dirender ulang. */
+.upgrade-card--success-flash {
+  animation: upgradeSuccessFlash 0.32s ease-out;
+}
+
+@keyframes upgradeSuccessFlash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(212, 162, 76, 0.55);
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgba(212, 162, 76, 0);
+  }
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 480px) {
+  .shop-grid {
+    grid-template-columns: 1fr;
+  }
+}

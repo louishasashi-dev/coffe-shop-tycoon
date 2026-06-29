@@ -1,0 +1,134 @@
+/* =========================================================
+   DASHBOARD.CSS
+   Hanya berisi style untuk halaman Dashboard:
+   hero card (total uang), grid statistik cepat,
+   dan panel statistik detail.
+   ========================================================= */
+
+/* ---------- HERO CARD: TOTAL UANG ---------- */
+.dashboard-hero {
+  text-align: center;
+  padding: var(--space-6);
+}
+
+.dashboard-hero__label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.dashboard-hero__amount {
+  font-family: var(--font-mono);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  color: var(--color-espresso);
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboard-hero__income {
+  margin-top: var(--space-2);
+  color: var(--color-success);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Animasi "pulse" saat nilai uang bertambah / berubah.
+   Class ini ditambahkan & dilepas lewat JS (lihat game.js / dashboard.js). */
+.value-pulse {
+  animation: valuePulse 0.4s ease;
+}
+
+@keyframes valuePulse {
+  0% {
+    transform: scale(1);
+    color: var(--color-success);
+  }
+  50% {
+    transform: scale(1.06);
+    color: var(--color-success);
+  }
+  100% {
+    transform: scale(1);
+    color: var(--color-espresso);
+  }
+}
+
+/* ---------- GRID STATISTIK CEPAT ---------- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-4);
+}
+
+.stat-card {
+  text-align: center;
+  padding: var(--space-4);
+}
+
+.stat-card__icon {
+  display: inline-block;
+  font-size: 1.4rem;
+  margin-bottom: var(--space-2);
+}
+
+.stat-card__label {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.stat-card__value {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-coffee);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- PANEL STATISTIK DETAIL ---------- */
+.statistics-panel__title {
+  font-size: 1.05rem;
+  margin-bottom: var(--space-4);
+}
+
+.statistics-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.statistics-list__item {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.92rem;
+}
+
+.statistics-list__item:last-child {
+  border-bottom: none;
+}
+
+.statistics-list__item span:first-child {
+  color: var(--color-text-muted);
+}
+
+.statistics-list__item span:last-child {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 480px) {
+  .dashboard-hero__amount {
+    font-size: 2rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

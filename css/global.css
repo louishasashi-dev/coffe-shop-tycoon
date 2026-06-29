@@ -1,0 +1,514 @@
+/* =========================================================
+   GLOBAL.CSS
+   Berisi: reset, variabel global, tipografi dasar, komponen
+   yang dipakai di seluruh halaman (button, card, scrollbar,
+   toast, modal, layout app-shell).
+   Style yang KHUSUS untuk satu halaman TIDAK boleh ditaruh
+   di sini (taruh di dashboard.css / shop.css / settings.css).
+   ========================================================= */
+
+/* ---------- 1. RESET DASAR ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+}
+
+/* ---------- 2. VARIABEL GLOBAL (DESIGN TOKENS) ---------- */
+:root {
+  /* -- Warna utama (tema Coffee Brown + Cream + Caramel) -- */
+  --color-espresso: #2c1810;
+  --color-coffee: #6b4423;
+  --color-coffee-light: #8c5a36;
+  --color-latte: #c8985f;
+  --color-caramel: #d4a24c;
+
+  --color-cream: #f7f1e6;
+  --color-cream-soft: #fbf7ef;
+  --color-card: #fffdf9;
+  --color-white: #ffffff;
+
+  --color-success: #5b8c5a;
+  --color-danger: #c0392b;
+
+  --color-text: #3a2a1d;
+  --color-text-muted: #8a7563;
+  --color-border: rgba(107, 68, 35, 0.12);
+
+  /* -- Tipografi -- */
+  --font-display: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  --font-body:
+    -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+  /* -- Spacing scale -- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* -- Radius & shadow -- */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+
+  --shadow-sm: 0 2px 6px rgba(44, 24, 16, 0.06);
+  --shadow-md: 0 8px 24px rgba(44, 24, 16, 0.1);
+  --shadow-lg: 0 16px 40px rgba(44, 24, 16, 0.14);
+
+  /* -- Transisi -- */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s ease;
+  --transition-slow: 0.45s ease;
+
+  /* -- Z-index -- */
+  --z-modal: 100;
+  --z-toast: 110;
+
+  /* -- Lebar sidebar (dipakai di layout app-shell) -- */
+  --sidebar-width: 240px;
+}
+
+/* -- Tema gelap (akan diaktifkan via Settings pada tahap berikutnya) -- */
+[data-theme="dark"] {
+  --color-cream: #1e1812;
+  --color-cream-soft: #241c15;
+  --color-card: #2a221a;
+  --color-white: #2f261d;
+
+  --color-text: #f1e6d8;
+  --color-text-muted: #b3a18d;
+  --color-border: rgba(255, 235, 205, 0.08);
+}
+
+/* ---------- 3. TIPOGRAFI DASAR ---------- */
+body {
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background-color: var(--color-cream);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  color: var(--color-espresso);
+  font-weight: 700;
+}
+
+/* ---------- 4. SCROLLBAR ---------- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-latte) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--color-latte);
+  border-radius: var(--radius-sm);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-coffee-light);
+}
+
+/* ---------- 5. KOMPONEN: CARD ---------- */
+.card {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+  transition:
+    transform var(--transition-base),
+    box-shadow var(--transition-base);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Glassmorphism ringan, dipakai pada elemen tertentu (mis. hero card) */
+.glass {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+/* ---------- 6. KOMPONEN: BUTTON ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.btn--primary {
+  background-color: var(--color-coffee);
+  color: var(--color-white);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn--primary:hover {
+  background-color: var(--color-coffee-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn--primary:active {
+  transform: translateY(0);
+}
+
+.btn--ghost {
+  background-color: transparent;
+  color: var(--color-coffee);
+  border: 1px solid var(--color-border);
+}
+
+.btn--ghost:hover {
+  background-color: rgba(107, 68, 35, 0.06);
+}
+
+.btn--danger {
+  background-color: var(--color-danger);
+  color: var(--color-white);
+}
+
+.btn--danger:hover {
+  filter: brightness(1.08);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ---------- 7. LAYOUT: APP SHELL ---------- */
+.app-shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  background-color: var(--color-coffee);
+  background-image: linear-gradient(
+    180deg,
+    var(--color-coffee) 0%,
+    var(--color-espresso) 100%
+  );
+  color: var(--color-cream-soft);
+  padding: var(--space-5) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.main-content {
+  padding: var(--space-6);
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+/* ---------- 8. BRAND LOGO + ANIMASI ASAP ---------- */
+.brand-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-3);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.coffee-cup {
+  position: relative;
+  width: 42px;
+  height: 32px;
+  background-color: var(--color-caramel);
+  border-radius: 4px 4px 16px 16px;
+}
+
+.coffee-cup__handle {
+  position: absolute;
+  top: 6px;
+  right: -11px;
+  width: 12px;
+  height: 14px;
+  border: 3px solid var(--color-caramel);
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+}
+
+.steam {
+  position: absolute;
+  top: -10px;
+  width: 3px;
+  height: 10px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 2px;
+  opacity: 0;
+  animation: steamRise 2.4s ease-in-out infinite;
+}
+
+.steam--1 {
+  left: 9px;
+  animation-delay: 0s;
+}
+.steam--2 {
+  left: 19px;
+  animation-delay: 0.6s;
+}
+.steam--3 {
+  left: 29px;
+  animation-delay: 1.2s;
+}
+
+@keyframes steamRise {
+  0% {
+    transform: translateY(0) scaleX(1);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-14px) scaleX(1.4);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-26px) scaleX(1.8);
+    opacity: 0;
+  }
+}
+
+.brand-title {
+  font-size: 1.15rem;
+  color: var(--color-cream-soft);
+}
+
+.brand-subtitle {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* ---------- 9. NAVIGASI TAB ---------- */
+.nav-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.nav-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 600;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.nav-tab:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--color-white);
+}
+
+.nav-tab--active {
+  background-color: rgba(255, 255, 255, 0.14);
+  color: var(--color-white);
+}
+
+.nav-tab__icon {
+  font-size: 1.05rem;
+}
+
+/* ---------- 10. PAGE VISIBILITY ---------- */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  animation: fadeIn var(--transition-slow);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- 11. TOAST ---------- */
+.toast-container {
+  position: fixed;
+  bottom: var(--space-5);
+  right: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  z-index: var(--z-toast);
+}
+
+.toast {
+  background-color: var(--color-espresso);
+  color: var(--color-cream-soft);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  font-size: 0.9rem;
+  animation: toastIn var(--transition-base);
+}
+
+.toast--success {
+  border-left: 4px solid var(--color-success);
+}
+.toast--danger {
+  border-left: 4px solid var(--color-danger);
+}
+
+/* Animasi keluar, ditambahkan lewat JS sebelum elemen toast dihapus */
+.toast--leaving {
+  animation: toastOut 0.3s ease forwards;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes toastOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+/* ---------- 12. MODAL ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(44, 24, 16, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+}
+
+.modal-content {
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+}
+
+/* ---------- 13. UTILITAS ---------- */
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ---------- 14. RESPONSIVE: MOBILE ---------- */
+@media (max-width: 768px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .sidebar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .brand-logo {
+    flex-direction: row;
+    border-bottom: none;
+    padding-bottom: 0;
+    text-align: left;
+  }
+
+  .brand-subtitle {
+    display: none;
+  }
+
+  .nav-tabs {
+    flex-direction: row;
+  }
+
+  .nav-tab__label {
+    display: none;
+  }
+
+  .main-content {
+    max-height: none;
+    padding: var(--space-4);
+  }
+}

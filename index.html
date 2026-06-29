@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coffee Shop Tycoon</title>
+
+    <!-- Global styles: variabel warna, tipografi, komponen dasar (button, card, dll) -->
+    <link rel="stylesheet" href="css/global.css" />
+    <!-- Style khusus halaman Dashboard -->
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <!-- Style khusus halaman Shop -->
+    <link rel="stylesheet" href="css/shop.css" />
+    <!-- Style khusus halaman Settings -->
+    <link rel="stylesheet" href="css/settings.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <!-- ===================== SIDEBAR / HEADER NAVIGASI ===================== -->
+      <header class="sidebar">
+        <!-- Brand / Logo dengan animasi cangkir kopi mengeluarkan asap -->
+        <div class="brand-logo">
+          <div class="coffee-cup" aria-hidden="true">
+            <span class="steam steam--1"></span>
+            <span class="steam steam--2"></span>
+            <span class="steam steam--3"></span>
+            <div class="coffee-cup__handle"></div>
+          </div>
+          <div class="brand-text">
+            <h1 class="brand-title">Coffee Shop Tycoon</h1>
+            <p class="brand-subtitle">Dari kedai kecil, menuju jaringan kopi</p>
+          </div>
+        </div>
+
+        <!-- Navigasi tab utama. Tab switching aktif lewat ui.js. -->
+        <nav class="nav-tabs" aria-label="Navigasi utama">
+          <button
+            class="nav-tab nav-tab--active"
+            type="button"
+            data-page="dashboard"
+          >
+            <span class="nav-tab__icon" aria-hidden="true">📊</span>
+            <span class="nav-tab__label">Dashboard</span>
+          </button>
+          <button class="nav-tab" type="button" data-page="shop">
+            <span class="nav-tab__icon" aria-hidden="true">🛒</span>
+            <span class="nav-tab__label">Shop</span>
+          </button>
+          <button class="nav-tab" type="button" data-page="settings">
+            <span class="nav-tab__icon" aria-hidden="true">⚙️</span>
+            <span class="nav-tab__label">Settings</span>
+          </button>
+        </nav>
+      </header>
+
+      <!-- ===================== KONTEN UTAMA ===================== -->
+      <main class="main-content">
+        <!-- ---------- HALAMAN: DASHBOARD ---------- -->
+        <section id="page-dashboard" class="page" data-page="dashboard">
+          <!-- Hero card: angka uang utama -->
+          <div class="dashboard-hero card glass">
+            <p class="dashboard-hero__label">Total Uang</p>
+            <h2 class="dashboard-hero__amount" id="stat-total-money">Rp500</h2>
+            <p class="dashboard-hero__income">
+              +<span id="stat-income-per-second">Rp2</span> / detik
+            </p>
+          </div>
+
+          <!-- Grid statistik cepat -->
+          <div class="stats-grid">
+            <div class="stat-card card">
+              <span class="stat-card__icon" aria-hidden="true">👥</span>
+              <p class="stat-card__label">Total Karyawan</p>
+              <p class="stat-card__value" id="stat-total-employee">0</p>
+            </div>
+
+            <div class="stat-card card">
+              <span class="stat-card__icon" aria-hidden="true">🏪</span>
+              <p class="stat-card__label">Level Kedai</p>
+              <p class="stat-card__value" id="stat-shop-level">1</p>
+            </div>
+
+            <div class="stat-card card">
+              <span class="stat-card__icon" aria-hidden="true">🛠️</span>
+              <p class="stat-card__label">Total Upgrade</p>
+              <p class="stat-card__value" id="stat-total-upgrade">0</p>
+            </div>
+
+            <div class="stat-card card">
+              <span class="stat-card__icon" aria-hidden="true">⏱️</span>
+              <p class="stat-card__label">Waktu Bermain</p>
+              <p class="stat-card__value" id="stat-play-time">00:00:00</p>
+            </div>
+          </div>
+
+          <!-- Panel statistik detail -->
+          <div class="statistics-panel card">
+            <h3 class="statistics-panel__title">Statistik</h3>
+            <ul class="statistics-list">
+              <li class="statistics-list__item">
+                <span>Total Kopi Terjual</span>
+                <span id="stat-total-coffee-sold">0</span>
+              </li>
+              <li class="statistics-list__item">
+                <span>Total Pendapatan</span>
+                <span id="stat-total-income-earned">Rp0</span>
+              </li>
+              <li class="statistics-list__item">
+                <span>Total Upgrade Dibeli</span>
+                <span id="stat-total-upgrades-purchased">0</span>
+              </li>
+              <li class="statistics-list__item">
+                <span>Total Waktu Bermain</span>
+                <span id="stat-total-time-played">00:00:00</span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- ---------- HALAMAN: SHOP ---------- -->
+        <section id="page-shop" class="page" data-page="shop" hidden>
+          <div class="shop-header card glass">
+            <h2>Shop &amp; Upgrade</h2>
+            <p class="text-muted">
+              Tingkatkan peralatan, karyawan, dan bisnis untuk memperbesar
+              pendapatan kedai.
+            </p>
+          </div>
+
+          <div class="shop-category">
+            <h3 class="shop-category__title">☕ Equipment</h3>
+            <div class="shop-grid" id="shop-grid-equipment"></div>
+          </div>
+
+          <div class="shop-category">
+            <h3 class="shop-category__title">👥 Employee</h3>
+            <div class="shop-grid" id="shop-grid-employee"></div>
+          </div>
+
+          <div class="shop-category">
+            <h3 class="shop-category__title">🏢 Business</h3>
+            <div class="shop-grid" id="shop-grid-business"></div>
+          </div>
+        </section>
+
+        <!-- ---------- HALAMAN: SETTINGS ---------- -->
+        <section id="page-settings" class="page" data-page="settings" hidden>
+          <div class="settings-header card glass">
+            <h2>Settings</h2>
+            <p class="text-muted">
+              Kelola data permainan dan tampilan kedai Anda.
+            </p>
+          </div>
+
+          <div class="settings-section card">
+            <h3 class="settings-section__title">Data Game</h3>
+            <div class="settings-actions">
+              <button
+                class="btn btn--primary"
+                id="settings-save-btn"
+                type="button"
+              >
+                💾 Save Game
+              </button>
+              <button
+                class="btn btn--ghost"
+                id="settings-export-btn"
+                type="button"
+              >
+                ⬆️ Export Save
+              </button>
+              <button
+                class="btn btn--ghost"
+                id="settings-import-btn"
+                type="button"
+              >
+                ⬇️ Import Save
+              </button>
+              <button
+                class="btn btn--danger"
+                id="settings-reset-btn"
+                type="button"
+              >
+                🗑️ Reset Game
+              </button>
+            </div>
+          </div>
+
+          <div class="settings-section card">
+            <h3 class="settings-section__title">Tampilan</h3>
+            <label class="settings-toggle" for="settings-dark-mode-toggle">
+              <span class="settings-toggle__label">🌙 Dark Mode</span>
+              <span class="toggle-switch">
+                <input
+                  type="checkbox"
+                  id="settings-dark-mode-toggle"
+                  class="toggle-switch__input"
+                />
+                <span class="toggle-switch__track"></span>
+              </span>
+            </label>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Container untuk notifikasi toast, diisi oleh ui.js -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <!-- Container untuk modal/popup, diisi oleh ui.js -->
+    <div id="modal-overlay" class="modal-overlay" hidden>
+      <div class="modal-content card" id="modal-content"></div>
+    </div>
+
+    <!--
+    Urutan load script penting karena memengaruhi dependency:
+      utils.js, storage.js  -> tidak bergantung apa pun
+      ui.js                  -> tidak bergantung apa pun
+      dashboard.js            -> bergantung pada utils.js & ui.js
+      shop.js                 -> bergantung pada utils.js & ui.js
+      settings.js              -> bergantung pada storage.js & ui.js
+      game.js                  -> bergantung pada semua di atas (harus paling akhir)
+  -->
+    <script src="js/utils.js" defer></script>
+    <script src="js/storage.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/dashboard.js" defer></script>
+    <script src="js/shop.js" defer></script>
+    <script src="js/settings.js" defer></script>
+    <script src="js/game.js" defer></script>
+  </body>
+</html>
