@@ -5,228 +5,337 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Coffee Shop Tycoon</title>
 
-    <!-- Global styles: variabel warna, tipografi, komponen dasar (button, card, dll) -->
     <link rel="stylesheet" href="css/global.css" />
-    <!-- Style khusus halaman Dashboard -->
+    <link rel="stylesheet" href="css/wallet.css" />
+    <link rel="stylesheet" href="css/kedai.css" />
     <link rel="stylesheet" href="css/dashboard.css" />
-    <!-- Style khusus halaman Shop -->
+    <link rel="stylesheet" href="css/resource.css" />
     <link rel="stylesheet" href="css/shop.css" />
-    <!-- Style khusus halaman Settings -->
     <link rel="stylesheet" href="css/settings.css" />
   </head>
   <body>
-    <div class="app-shell">
-      <!-- ===================== SIDEBAR / HEADER NAVIGASI ===================== -->
-      <header class="sidebar">
-        <!-- Brand / Logo dengan animasi cangkir kopi mengeluarkan asap -->
-        <div class="brand-logo">
-          <div class="coffee-cup" aria-hidden="true">
-            <span class="steam steam--1"></span>
-            <span class="steam steam--2"></span>
-            <span class="steam steam--3"></span>
-            <div class="coffee-cup__handle"></div>
-          </div>
-          <div class="brand-text">
-            <h1 class="brand-title">Coffee Shop Tycoon</h1>
-            <p class="brand-subtitle">Dari kedai kecil, menuju jaringan kopi</p>
-          </div>
+    <!-- ===================== SCREEN 1: KEDAI SAYA ===================== -->
+    <div id="screen-shop-selector" class="screen kedai-selector">
+      <!-- Header: logo + judul + saldo wallet -->
+      <div class="kedai-selector__header">
+        <div class="coffee-cup" aria-hidden="true">
+          <span class="steam steam--1"></span>
+          <span class="steam steam--2"></span>
+          <span class="steam steam--3"></span>
+          <div class="coffee-cup__handle"></div>
         </div>
+        <h1>Coffee Shop Tycoon</h1>
+        <p class="text-muted">
+          Kelola jaringan kedai kopi Anda. Pilih kedai yang ingin dilanjutkan.
+        </p>
 
-        <!-- Navigasi tab utama. Tab switching aktif lewat ui.js. -->
-        <nav class="nav-tabs" aria-label="Navigasi utama">
-          <button
-            class="nav-tab nav-tab--active"
-            type="button"
-            data-page="dashboard"
+        <!-- Saldo Wallet bersama semua kedai -->
+        <div class="wallet-banner">
+          <span class="wallet-banner__icon" aria-hidden="true">💰</span>
+          <span class="wallet-banner__label">Saldo Wallet:</span>
+          <span class="wallet-banner__amount" id="wallet-balance-selector"
+            >Rp0</span
           >
-            <span class="nav-tab__icon" aria-hidden="true">📊</span>
-            <span class="nav-tab__label">Dashboard</span>
-          </button>
-          <button class="nav-tab" type="button" data-page="shop">
-            <span class="nav-tab__icon" aria-hidden="true">🛒</span>
-            <span class="nav-tab__label">Shop</span>
-          </button>
-          <button class="nav-tab" type="button" data-page="settings">
-            <span class="nav-tab__icon" aria-hidden="true">⚙️</span>
-            <span class="nav-tab__label">Settings</span>
-          </button>
-        </nav>
-      </header>
+        </div>
+      </div>
 
-      <!-- ===================== KONTEN UTAMA ===================== -->
-      <main class="main-content">
-        <!-- ---------- HALAMAN: DASHBOARD ---------- -->
-        <section id="page-dashboard" class="page" data-page="dashboard">
-          <!-- Hero card: angka uang utama -->
-          <div class="dashboard-hero card glass">
-            <p class="dashboard-hero__label">Total Uang</p>
-            <h2 class="dashboard-hero__amount" id="stat-total-money">Rp500</h2>
-            <p class="dashboard-hero__income">
-              +<span id="stat-income-per-second">Rp2</span> / detik
-            </p>
-          </div>
+      <!--
+      Panel ekspansi (dirender dinamis oleh kedai.js).
+      Kontennya berubah sesuai jumlah kedai & status syarat.
+      Saat tidak ada kedai: menampilkan ajakan "Buka Kedai Pertama".
+      Saat ada kedai: menampilkan daftar syarat + biaya + tombol ekspansi.
+    -->
+      <div
+        id="expansion-panel-container"
+        class="kedai-selector__expansion"
+      ></div>
 
-          <!-- Grid statistik cepat -->
-          <div class="stats-grid">
-            <div class="stat-card card">
-              <span class="stat-card__icon" aria-hidden="true">👥</span>
-              <p class="stat-card__label">Total Karyawan</p>
-              <p class="stat-card__value" id="stat-total-employee">0</p>
-            </div>
+      <!-- Empty state: muncul di bawah panel saat daftar kedai masih kosong -->
+      <div class="kedai-empty-state card" id="kedai-empty-state" hidden>
+        <p>Tekan tombol di atas untuk memulai petualangan kopi Anda!</p>
+      </div>
 
-            <div class="stat-card card">
-              <span class="stat-card__icon" aria-hidden="true">🏪</span>
-              <p class="stat-card__label">Level Kedai</p>
-              <p class="stat-card__value" id="stat-shop-level">1</p>
-            </div>
-
-            <div class="stat-card card">
-              <span class="stat-card__icon" aria-hidden="true">🛠️</span>
-              <p class="stat-card__label">Total Upgrade</p>
-              <p class="stat-card__value" id="stat-total-upgrade">0</p>
-            </div>
-
-            <div class="stat-card card">
-              <span class="stat-card__icon" aria-hidden="true">⏱️</span>
-              <p class="stat-card__label">Waktu Bermain</p>
-              <p class="stat-card__value" id="stat-play-time">00:00:00</p>
-            </div>
-          </div>
-
-          <!-- Panel statistik detail -->
-          <div class="statistics-panel card">
-            <h3 class="statistics-panel__title">Statistik</h3>
-            <ul class="statistics-list">
-              <li class="statistics-list__item">
-                <span>Total Kopi Terjual</span>
-                <span id="stat-total-coffee-sold">0</span>
-              </li>
-              <li class="statistics-list__item">
-                <span>Total Pendapatan</span>
-                <span id="stat-total-income-earned">Rp0</span>
-              </li>
-              <li class="statistics-list__item">
-                <span>Total Upgrade Dibeli</span>
-                <span id="stat-total-upgrades-purchased">0</span>
-              </li>
-              <li class="statistics-list__item">
-                <span>Total Waktu Bermain</span>
-                <span id="stat-total-time-played">00:00:00</span>
-              </li>
-            </ul>
-          </div>
-        </section>
-
-        <!-- ---------- HALAMAN: SHOP ---------- -->
-        <section id="page-shop" class="page" data-page="shop" hidden>
-          <div class="shop-header card glass">
-            <h2>Shop &amp; Upgrade</h2>
-            <p class="text-muted">
-              Tingkatkan peralatan, karyawan, dan bisnis untuk memperbesar
-              pendapatan kedai.
-            </p>
-          </div>
-
-          <div class="shop-category">
-            <h3 class="shop-category__title">☕ Equipment</h3>
-            <div class="shop-grid" id="shop-grid-equipment"></div>
-          </div>
-
-          <div class="shop-category">
-            <h3 class="shop-category__title">👥 Employee</h3>
-            <div class="shop-grid" id="shop-grid-employee"></div>
-          </div>
-
-          <div class="shop-category">
-            <h3 class="shop-category__title">🏢 Business</h3>
-            <div class="shop-grid" id="shop-grid-business"></div>
-          </div>
-        </section>
-
-        <!-- ---------- HALAMAN: SETTINGS ---------- -->
-        <section id="page-settings" class="page" data-page="settings" hidden>
-          <div class="settings-header card glass">
-            <h2>Settings</h2>
-            <p class="text-muted">
-              Kelola data permainan dan tampilan kedai Anda.
-            </p>
-          </div>
-
-          <div class="settings-section card">
-            <h3 class="settings-section__title">Data Game</h3>
-            <div class="settings-actions">
-              <button
-                class="btn btn--primary"
-                id="settings-save-btn"
-                type="button"
-              >
-                💾 Save Game
-              </button>
-              <button
-                class="btn btn--ghost"
-                id="settings-export-btn"
-                type="button"
-              >
-                ⬆️ Export Save
-              </button>
-              <button
-                class="btn btn--ghost"
-                id="settings-import-btn"
-                type="button"
-              >
-                ⬇️ Import Save
-              </button>
-              <button
-                class="btn btn--danger"
-                id="settings-reset-btn"
-                type="button"
-              >
-                🗑️ Reset Game
-              </button>
-            </div>
-          </div>
-
-          <div class="settings-section card">
-            <h3 class="settings-section__title">Tampilan</h3>
-            <label class="settings-toggle" for="settings-dark-mode-toggle">
-              <span class="settings-toggle__label">🌙 Dark Mode</span>
-              <span class="toggle-switch">
-                <input
-                  type="checkbox"
-                  id="settings-dark-mode-toggle"
-                  class="toggle-switch__input"
-                />
-                <span class="toggle-switch__track"></span>
-              </span>
-            </label>
-          </div>
-        </section>
-      </main>
+      <!-- Daftar kartu kedai (dirender dinamis oleh kedai.js) -->
+      <div class="kedai-list" id="kedai-list"></div>
     </div>
 
-    <!-- Container untuk notifikasi toast, diisi oleh ui.js -->
-    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+    <!-- ===================== SCREEN 2: GAME ===================== -->
+    <div id="screen-game" class="screen" hidden>
+      <div class="app-shell">
+        <!-- ======= SIDEBAR ======= -->
+        <header class="sidebar">
+          <div class="brand-logo">
+            <div class="coffee-cup" aria-hidden="true">
+              <span class="steam steam--1"></span>
+              <span class="steam steam--2"></span>
+              <span class="steam steam--3"></span>
+              <div class="coffee-cup__handle"></div>
+            </div>
+            <div class="brand-text">
+              <h1 class="brand-title">Coffee Shop Tycoon</h1>
+              <!-- Diisi nama kedai aktif oleh kedai.js -->
+              <p class="brand-subtitle" id="active-kedai-name">
+                Memuat kedai...
+              </p>
+            </div>
+          </div>
 
-    <!-- Container untuk modal/popup, diisi oleh ui.js -->
+          <!-- Saldo Wallet selalu terlihat di semua tab -->
+          <div class="wallet-widget" aria-label="Saldo wallet">
+            <span class="wallet-widget__icon" aria-hidden="true">💰</span>
+            <div>
+              <p class="wallet-widget__label">Saldo Wallet</p>
+              <p class="wallet-widget__amount" id="wallet-balance-sidebar">
+                Rp0
+              </p>
+            </div>
+          </div>
+
+          <nav class="nav-tabs" aria-label="Navigasi utama">
+            <button
+              class="nav-tab nav-tab--active"
+              type="button"
+              data-page="dashboard"
+            >
+              <span class="nav-tab__icon" aria-hidden="true">📊</span>
+              <span class="nav-tab__label">Dashboard</span>
+            </button>
+            <button class="nav-tab" type="button" data-page="shop">
+              <span class="nav-tab__icon" aria-hidden="true">🛒</span>
+              <span class="nav-tab__label">Shop</span>
+            </button>
+            <button class="nav-tab" type="button" data-page="settings">
+              <span class="nav-tab__icon" aria-hidden="true">⚙️</span>
+              <span class="nav-tab__label">Settings</span>
+            </button>
+          </nav>
+
+          <button
+            class="btn btn--ghost sidebar-switch-btn"
+            id="sidebar-switch-kedai-btn"
+            type="button"
+          >
+            <span aria-hidden="true">🔄</span>
+            <span class="sidebar-switch-btn__label">Ganti Kedai</span>
+          </button>
+        </header>
+
+        <!-- ======= KONTEN UTAMA ======= -->
+        <main class="main-content">
+          <!-- ---------- HALAMAN: DASHBOARD ---------- -->
+          <section id="page-dashboard" class="page" data-page="dashboard">
+            <!-- Hero card: saldo wallet + income kedai ini -->
+            <div class="dashboard-hero card glass">
+              <p class="dashboard-hero__label">Saldo Wallet</p>
+              <h2 class="dashboard-hero__amount" id="wallet-balance-hero">
+                Rp0
+              </h2>
+              <p class="dashboard-hero__income">
+                +<span id="stat-income-per-second">Rp0</span> / detik dari kedai
+                ini
+              </p>
+            </div>
+
+            <!-- Grid statistik cepat -->
+            <div class="stats-grid">
+              <div class="stat-card card">
+                <span class="stat-card__icon" aria-hidden="true">👥</span>
+                <p class="stat-card__label">Total Karyawan</p>
+                <p class="stat-card__value" id="stat-total-employee">0</p>
+              </div>
+
+              <div class="stat-card card">
+                <span class="stat-card__icon" aria-hidden="true">🏪</span>
+                <p class="stat-card__label">Level Kedai</p>
+                <p class="stat-card__value" id="stat-shop-level">1</p>
+              </div>
+
+              <div class="stat-card card">
+                <span class="stat-card__icon" aria-hidden="true">🛠️</span>
+                <p class="stat-card__label">Total Upgrade</p>
+                <p class="stat-card__value" id="stat-total-upgrade">0</p>
+              </div>
+
+              <div class="stat-card card">
+                <span class="stat-card__icon" aria-hidden="true">⏱️</span>
+                <p class="stat-card__label">Waktu Bermain</p>
+                <p class="stat-card__value" id="stat-play-time">00:00:00</p>
+              </div>
+            </div>
+
+            <!-- Panel bahan baku -->
+            <div class="resource-panel card">
+              <div class="resource-panel__header">
+                <h3 class="resource-panel__title">🏭 Bahan Baku</h3>
+                <p class="resource-panel__subtitle text-muted">
+                  Stok berkurang saat kedai aktif. Jika salah satu habis,
+                  produksi berhenti total.
+                </p>
+              </div>
+
+              <div
+                class="production-halted-banner"
+                id="production-halted-banner"
+                hidden
+              >
+                <span class="halted-banner__icon" aria-hidden="true">⚠️</span>
+                <div>
+                  <p class="halted-banner__text">
+                    Produksi <strong>BERHENTI!</strong>
+                    Isi ulang bahan baku yang habis agar kedai kembali
+                    beroperasi.
+                  </p>
+                  <span
+                    class="halted-banner__resources"
+                    id="halted-resource-names"
+                  ></span>
+                </div>
+              </div>
+
+              <div class="resource-grid" id="resource-grid"></div>
+            </div>
+
+            <!-- Panel statistik detail -->
+            <div class="statistics-panel card">
+              <h3 class="statistics-panel__title">Statistik Kedai Ini</h3>
+              <ul class="statistics-list">
+                <li class="statistics-list__item">
+                  <span>Total Kopi Terjual</span>
+                  <span id="stat-total-coffee-sold">0</span>
+                </li>
+                <li class="statistics-list__item">
+                  <span>Total Pendapatan</span>
+                  <span id="stat-total-income-earned">Rp0</span>
+                </li>
+                <li class="statistics-list__item">
+                  <span>Total Upgrade Dibeli</span>
+                  <span id="stat-total-upgrades-purchased">0</span>
+                </li>
+                <li class="statistics-list__item">
+                  <span>Total Waktu Bermain</span>
+                  <span id="stat-total-time-played">00:00:00</span>
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- ---------- HALAMAN: SHOP ---------- -->
+          <section id="page-shop" class="page" data-page="shop" hidden>
+            <div class="shop-header card glass">
+              <h2>Shop &amp; Upgrade</h2>
+              <p class="text-muted">
+                Tingkatkan peralatan, karyawan, dan bisnis. Semua 290 level
+                harus MAX sebelum bisa membuka kedai baru.
+              </p>
+            </div>
+
+            <div class="shop-category">
+              <h3 class="shop-category__title">☕ Equipment</h3>
+              <div class="shop-grid" id="shop-grid-equipment"></div>
+            </div>
+
+            <div class="shop-category">
+              <h3 class="shop-category__title">👥 Employee</h3>
+              <div class="shop-grid" id="shop-grid-employee"></div>
+            </div>
+
+            <div class="shop-category">
+              <h3 class="shop-category__title">🏢 Business</h3>
+              <div class="shop-grid" id="shop-grid-business"></div>
+            </div>
+          </section>
+
+          <!-- ---------- HALAMAN: SETTINGS ---------- -->
+          <section id="page-settings" class="page" data-page="settings" hidden>
+            <div class="settings-header card glass">
+              <h2>Settings</h2>
+              <p class="text-muted">
+                Kelola progres kedai yang sedang Anda mainkan dan tampilan
+                aplikasi.
+              </p>
+            </div>
+
+            <div class="settings-section card">
+              <h3 class="settings-section__title">Data Kedai</h3>
+              <div class="settings-actions">
+                <button
+                  class="btn btn--primary"
+                  id="settings-save-btn"
+                  type="button"
+                >
+                  💾 Save Game
+                </button>
+                <button
+                  class="btn btn--ghost"
+                  id="settings-export-btn"
+                  type="button"
+                >
+                  ⬆️ Export Save
+                </button>
+                <button
+                  class="btn btn--ghost"
+                  id="settings-import-btn"
+                  type="button"
+                >
+                  ⬇️ Import Save
+                </button>
+                <button
+                  class="btn btn--danger"
+                  id="settings-reset-btn"
+                  type="button"
+                >
+                  🗑️ Reset Kedai Ini
+                </button>
+              </div>
+            </div>
+
+            <div class="settings-section card">
+              <h3 class="settings-section__title">Tampilan</h3>
+              <label class="settings-toggle" for="settings-dark-mode-toggle">
+                <span class="settings-toggle__label">🌙 Dark Mode</span>
+                <span class="toggle-switch">
+                  <input
+                    type="checkbox"
+                    id="settings-dark-mode-toggle"
+                    class="toggle-switch__input"
+                  />
+                  <span class="toggle-switch__track"></span>
+                </span>
+              </label>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- Toast & Modal -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
     <div id="modal-overlay" class="modal-overlay" hidden>
       <div class="modal-content card" id="modal-content"></div>
     </div>
 
     <!--
-    Urutan load script penting karena memengaruhi dependency:
-      utils.js, storage.js  -> tidak bergantung apa pun
-      ui.js                  -> tidak bergantung apa pun
-      dashboard.js            -> bergantung pada utils.js & ui.js
-      shop.js                 -> bergantung pada utils.js & ui.js
-      settings.js              -> bergantung pada storage.js & ui.js
-      game.js                  -> bergantung pada semua di atas (harus paling akhir)
+    Urutan load script (dependency order):
+      utils.js    -> tidak bergantung apa pun
+      storage.js  -> tidak bergantung apa pun
+      ui.js       -> tidak bergantung apa pun
+      wallet.js   -> butuh utils, storage
+      dashboard.js -> butuh utils
+      resource.js  -> butuh utils, wallet, ui, storage
+      shop.js      -> butuh utils, wallet, ui
+      settings.js  -> butuh storage, wallet, ui
+      game.js      -> butuh semua di atas
+      kedai.js     -> PALING AKHIR, titik masuk aplikasi
   -->
     <script src="js/utils.js" defer></script>
     <script src="js/storage.js" defer></script>
     <script src="js/ui.js" defer></script>
+    <script src="js/wallet.js" defer></script>
     <script src="js/dashboard.js" defer></script>
+    <script src="js/resource.js" defer></script>
     <script src="js/shop.js" defer></script>
     <script src="js/settings.js" defer></script>
     <script src="js/game.js" defer></script>
+    <script src="js/kedai.js" defer></script>
   </body>
 </html>

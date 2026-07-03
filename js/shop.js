@@ -4,25 +4,18 @@
  * SHOP.JS
  * Tanggung jawab modul ini HANYA:
  *   - Daftar upgrade (Equipment, Employee, Business) & harganya
- *   - Membeli upgrade
- *   - Unlock upgrade (upgrade tertentu butuh prasyarat upgrade lain)
+ *   - Membeli upgrade (mengambil dana dari Wallet)
+ *   - Unlock upgrade (prasyarat upgrade lain)
  *   - Menghitung total income/employee/shop-level dari seluruh upgrade
  *
- * Modul ini TIDAK mengurus game loop (itu tugas game.js) dan
- * TIDAK mengurus dashboard (itu tugas dashboard.js).
+ * SEJAK TAHAP 3: tambahan isFullyMaxed(state) yang dipakai kedai.js
+ * untuk memvalidasi syarat "semua upgrade harus MAX" sebelum
+ * pemain boleh membuka kedai baru.
  */
 
-/** Income dasar kedai tanpa upgrade apa pun (kedai kecil baru buka). */
 const BASE_INCOME_PER_SECOND = 2;
-
-/** Lama animasi "berhasil" pada kartu (ms), HARUS sinkron dengan durasi animasi di shop.css. */
 const BUY_SUCCESS_ANIMATION_MS = 320;
 
-/**
- * Daftar definisi seluruh upgrade yang ada di game.
- * Field "requires" (opsional) artinya upgrade ini terkunci sampai
- * upgrade lain mencapai level tertentu.
- */
 const UPGRADE_DEFINITIONS = [
   // ---------- EQUIPMENT ----------
   {
@@ -199,8 +192,6 @@ const Shop = {
   init() {
     this.cacheDom();
     this.attachEventListeners();
-    // Catatan: render pertama dipanggil oleh Game.init() setelah
-    // save dimuat, supaya kartu upgrade langsung sesuai data tersimpan.
   },
 
   cacheDom() {
@@ -211,8 +202,6 @@ const Shop = {
     };
   },
 
-  /** Satu listener klik (delegasi) per grid kategori, agar tidak perlu
-   *  dipasang ulang setiap kali kartu di-render ulang. */
   attachEventListeners() {
     Object.values(this.dom).forEach((grid) => {
       if (!grid) return;
@@ -234,7 +223,6 @@ const Shop = {
     return state.upgrades[id] || 0;
   },
 
-  /** Harga upgrade naik secara eksponensial setiap level. */
   calculatePrice(definition, currentLevel) {
     return Math.round(
       definition.basePrice * Math.pow(definition.priceMultiplier, currentLevel),
@@ -245,79 +233,100 @@ const Shop = {
     return currentLevel >= definition.maxLevel;
   },
 
-  /** Cek apakah upgrade sudah terbuka (tidak punya prasyarat, atau prasyaratnya terpenuhi). */
   isUnlocked(state, definition) {
     if (!definition.requires) return true;
-    const requiredLevel = this.getUpgradeLevel(state, definition.requires.id);
-    return requiredLevel >= definition.requires.level;
+    return (
+      this.getUpgradeLevel(state, definition.requires.id) >=
+      definition.requires.level
+    );
   },
 
-  canAfford(state, definition, currentLevel, price) {
-    return !this.isMaxed(definition, currentLevel) && state.money >= price;
-  },
+  /* ===================== KALKULASI TURUNAN ===================== */
 
-  /* ===================== KALKULASI TURUNAN (DIPAKAI GAME.JS) ===================== */
-
-  /** Total income/detik = income dasar + income dari semua level upgrade yang dimiliki. */
   calculateTotalIncomePerSecond(state) {
     let total = this.BASE_INCOME_PER_SECOND;
     UPGRADE_DEFINITIONS.forEach((def) => {
-      const level = this.getUpgradeLevel(state, def.id);
-      total += level * def.incomePerLevel;
+      total += this.getUpgradeLevel(state, def.id) * def.incomePerLevel;
     });
     return total;
   },
 
-  /** Total karyawan = jumlah level dari semua upgrade kategori employee. */
   calculateTotalEmployees(state) {
     let total = 0;
     this.getDefinitionsByCategory("employee").forEach((def) => {
-      const level = this.getUpgradeLevel(state, def.id);
-      total += level * (def.employeePerLevel || 0);
+      total +=
+        this.getUpgradeLevel(state, def.id) * (def.employeePerLevel || 0);
     });
     return total;
   },
 
-  /** Level kedai naik setiap kali upgrade "Bigger Shop" dibeli. */
   calculateShopLevel(state) {
-    const biggerShopDef = this.getDefinitionById("biggerShop");
-    const level = this.getUpgradeLevel(state, "biggerShop");
-    return 1 + level * (biggerShopDef.shopLevelPerLevel || 0);
+    const def = this.getDefinitionById("biggerShop");
+    return (
+      1 +
+      this.getUpgradeLevel(state, "biggerShop") * (def.shopLevelPerLevel || 0)
+    );
+  },
+
+  /* ===================== STATISTIK UPGRADE ===================== */
+
+  /**
+   * Jumlah total level upgrade yang sudah dimiliki (semua kategori dijumlah).
+   * @param {object} state
+   * @returns {number}
+   */
+  getTotalLevelsOwned(state) {
+    return UPGRADE_DEFINITIONS.reduce(
+      (sum, def) => sum + this.getUpgradeLevel(state, def.id),
+      0,
+    );
+  },
+
+  /**
+   * Total level maksimum dari seluruh upgrade (konstan, tidak bergantung state).
+   * Dipakai sebagai "denominator" progress bar & syarat ekspansi.
+   * Hasilnya: (25×5) + (20×5) + (15+10+15+15+10) = 290.
+   * @returns {number}
+   */
+  getTotalMaxLevels() {
+    return UPGRADE_DEFINITIONS.reduce((sum, def) => sum + def.maxLevel, 0);
+  },
+
+  /**
+   * Cek apakah SEMUA upgrade di satu kedai sudah mencapai level maksimum.
+   * Dipakai oleh kedai.js untuk memvalidasi syarat "semua upgrade harus MAX"
+   * sebelum pemain boleh membuka kedai baru.
+   * @param {object} state
+   * @returns {boolean}
+   */
+  isFullyMaxed(state) {
+    return UPGRADE_DEFINITIONS.every((def) => {
+      const level = this.getUpgradeLevel(state, def.id);
+      return this.isMaxed(def, level);
+    });
   },
 
   /* ===================== MEMBELI UPGRADE ===================== */
 
-  /**
-   * Mencoba membeli satu level upgrade.
-   * Memodifikasi state secara langsung jika berhasil.
-   * @param {object} state
-   * @param {string} id
-   * @returns {{success: boolean, reason?: string, definition?: object, newLevel?: number}}
-   */
   buyUpgrade(state, id) {
     const definition = this.getDefinitionById(id);
     if (!definition) return { success: false, reason: "unknown" };
 
-    if (!this.isUnlocked(state, definition)) {
+    if (!this.isUnlocked(state, definition))
       return { success: false, reason: "locked" };
-    }
 
     const currentLevel = this.getUpgradeLevel(state, id);
-    if (this.isMaxed(definition, currentLevel)) {
+    if (this.isMaxed(definition, currentLevel))
       return { success: false, reason: "maxed" };
-    }
 
     const price = this.calculatePrice(definition, currentLevel);
-    if (state.money < price) {
+    if (!Wallet.spend(price))
       return { success: false, reason: "insufficient_funds" };
-    }
 
-    state.money -= price;
     state.upgrades[id] = currentLevel + 1;
     state.totalUpgrades += 1;
     state.totalUpgradesPurchased += 1;
 
-    // Recalculate stat turunan supaya dashboard langsung akurat.
     state.incomePerSecond = this.calculateTotalIncomePerSecond(state);
     state.employees = this.calculateTotalEmployees(state);
     state.shopLevel = this.calculateShopLevel(state);
@@ -325,7 +334,6 @@ const Shop = {
     return { success: true, definition, newLevel: currentLevel + 1 };
   },
 
-  /** Handler klik tombol beli (dipasang lewat event delegation). */
   handleBuyClick(event) {
     const button = event.target.closest("[data-upgrade-id]");
     if (!button || button.disabled) return;
@@ -335,7 +343,10 @@ const Shop = {
 
     if (!result.success) {
       if (result.reason === "insufficient_funds") {
-        UI.showToast("Uang tidak cukup untuk membeli upgrade ini.", "danger");
+        UI.showToast(
+          "Saldo Wallet tidak cukup untuk membeli upgrade ini.",
+          "danger",
+        );
       }
       return;
     }
@@ -346,21 +357,17 @@ const Shop = {
     );
     Dashboard.render(Game.state);
 
-    // Beri animasi "berhasil" sekilas pada kartu yang baru dibeli dulu,
-    // baru render ulang grid SETELAH animasi selesai supaya tidak terpotong
-    // oleh perubahan level/harga yang langsung mengganti isi kartu.
     const card = button.closest(".upgrade-card");
     if (card) card.classList.add("upgrade-card--success-flash");
 
     setTimeout(() => {
       this.render(Game.state);
-      Storage.save(Game.state); // auto save saat membeli upgrade
+      Storage.saveShopState(Game.activeShopId, Game.state);
     }, BUY_SUCCESS_ANIMATION_MS);
   },
 
   /* ===================== RENDER ===================== */
 
-  /** Membangun ulang seluruh kartu upgrade di tiap kategori. */
   render(state) {
     this.dom.gridEquipment.innerHTML = this.buildCategoryHtml(
       state,
@@ -391,7 +398,8 @@ const Shop = {
             </div>
           </div>
           <p class="upgrade-card__requirement">
-            Butuh ${this.getDefinitionById(definition.requires.id).name} level ${definition.requires.level}
+            Butuh ${this.getDefinitionById(definition.requires.id).name}
+            level ${definition.requires.level}
           </p>
         </div>
       `;
@@ -399,7 +407,7 @@ const Shop = {
 
     const maxed = this.isMaxed(definition, level);
     const price = maxed ? null : this.calculatePrice(definition, level);
-    const affordable = !maxed && state.money >= price;
+    const affordable = !maxed && Wallet.canAfford(price);
     const progressPercent = Math.round((level / definition.maxLevel) * 100);
 
     return `
@@ -424,17 +432,12 @@ const Shop = {
           data-upgrade-id="${definition.id}"
           ${maxed || !affordable ? "disabled" : ""}
         >
-          ${maxed ? "MAX" : Utils.formatMoney(price)}
+          ${maxed ? "⭐ MAX" : Utils.formatMoney(price)}
         </button>
       </div>
     `;
   },
 
-  /**
-   * Dipanggil setiap tick oleh game.js untuk memperbarui status
-   * disabled/enabled tombol beli SAJA (tanpa rebuild seluruh HTML),
-   * agar ringan dan tidak mengganggu animasi/hover yang sedang berjalan.
-   */
   updateAffordability(state) {
     UPGRADE_DEFINITIONS.forEach((definition) => {
       const button = document.querySelector(
@@ -449,8 +452,9 @@ const Shop = {
       )
         return;
 
-      const price = this.calculatePrice(definition, level);
-      button.disabled = state.money < price;
+      button.disabled = !Wallet.canAfford(
+        this.calculatePrice(definition, level),
+      );
     });
   },
 };

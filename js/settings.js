@@ -3,15 +3,15 @@
 /**
  * SETTINGS.JS
  * Tanggung jawab modul ini HANYA:
- *   - Save Game (manual)
+ *   - Save Game (manual) untuk kedai yang sedang aktif
  *   - Export Save (jadi kode teks yang bisa disalin pemain)
- *   - Import Save (dari kode teks)
- *   - Reset Game (dengan konfirmasi)
+ *   - Import Save (dari kode teks, menimpa kedai yang sedang aktif)
+ *   - Reset Kedai (mengembalikan kedai aktif ke kondisi awal)
  *   - Dark Mode (toggle & terapkan tema)
  *
- * Modul ini TIDAK tahu apa-apa soal upgrade atau game loop.
- * Ia hanya membaca/menulis Game.state dan memanggil Storage.js untuk
- * urusan penyimpanan, serta UI.js untuk urusan tampilan popup/toast.
+ * CATATAN: export/import/reset di sini HANYA menyentuh progres kedai
+ * (upgrade & statistik), TIDAK pernah menyentuh saldo Wallet -- wallet
+ * bersifat global milik pemain, dikelola sepenuhnya oleh wallet.js.
  */
 
 const Settings = {
@@ -21,8 +21,8 @@ const Settings = {
     this.cacheDom();
     this.attachEventListeners();
     // Catatan: penerapan tema awal (applyTheme) dipanggil oleh
-    // Game.init() SETELAH save dimuat, supaya preferensi dark mode
-    // pemain yang tersimpan tidak tertimpa oleh nilai default.
+    // Game.startSession() setelah kedai dimuat, supaya preferensi
+    // dark mode milik kedai tersebut tidak tertimpa nilai default.
   },
 
   cacheDom() {
@@ -50,9 +50,10 @@ const Settings = {
   /* ===================== SAVE GAME (MANUAL) ===================== */
 
   handleSaveNow() {
-    const success = Storage.save(Game.state);
+    Wallet.persist();
+    const success = Storage.saveShopState(Game.activeShopId, Game.state);
     UI.showToast(
-      success ? "Game berhasil disimpan." : "Gagal menyimpan game.",
+      success ? "Kedai berhasil disimpan." : "Gagal menyimpan kedai.",
       success ? "success" : "danger",
     );
   },
@@ -65,7 +66,9 @@ const Settings = {
     UI.showModal(`
       <h3 style="margin-bottom: 12px;">Export Save</h3>
       <p class="text-muted" style="margin-bottom: 12px;">
-        Salin kode di bawah ini dan simpan baik-baik untuk memindahkan progres Anda.
+        Salin kode di bawah ini untuk memindahkan progres kedai
+        "${Game.activeShopName}" (upgrade & statistik). Saldo Wallet
+        Anda tidak ikut diekspor karena bersifat global.
       </p>
       <textarea id="export-textarea" class="settings-textarea" readonly>${code}</textarea>
       <button class="btn btn--primary" id="export-copy-btn" type="button" style="margin-top: 12px;">
@@ -106,8 +109,9 @@ const Settings = {
     UI.showModal(`
       <h3 style="margin-bottom: 12px;">Import Save</h3>
       <p class="text-muted" style="margin-bottom: 12px;">
-        Tempelkan kode save Anda di bawah ini.
-        Progres saat ini akan ditimpa oleh data yang diimpor.
+        Tempelkan kode save Anda di bawah ini. Progres kedai
+        "${Game.activeShopName}" saat ini (upgrade & statistik) akan
+        ditimpa oleh data yang diimpor. Saldo Wallet tidak terpengaruh.
       </p>
       <textarea id="import-textarea" class="settings-textarea" placeholder="Tempel kode save di sini..."></textarea>
       <button class="btn btn--primary" id="import-confirm-btn" type="button" style="margin-top: 12px;">
@@ -136,7 +140,7 @@ const Settings = {
 
       Game.state = mergeWithDefaultState(payload.state);
       Game.recalculateDerivedStats();
-      Storage.save(Game.state);
+      Storage.saveShopState(Game.activeShopId, Game.state);
 
       Dashboard.render(Game.state);
       Shop.render(Game.state);
@@ -151,13 +155,12 @@ const Settings = {
     }
   },
 
-  /* ===================== RESET GAME ===================== */
+  /* ===================== RESET KEDAI ===================== */
 
   handleResetPrompt() {
     UI.showConfirm({
-      title: "Reset Game?",
-      message:
-        "Semua progres akan dihapus permanen dan tidak bisa dikembalikan. Lanjutkan?",
+      title: "Reset Kedai Ini?",
+      message: `Semua upgrade & statistik kedai "${Game.activeShopName}" akan dihapus permanen dan dimulai dari awal lagi. Saldo Wallet Anda TIDAK akan berkurang. Lanjutkan?`,
       confirmLabel: "Reset",
       danger: true,
       onConfirm: () => this.handleResetConfirm(),
@@ -165,16 +168,19 @@ const Settings = {
   },
 
   handleResetConfirm() {
-    Storage.reset();
     Game.state = createInitialState();
     Game.recalculateDerivedStats();
+    Storage.saveShopState(Game.activeShopId, Game.state);
 
     Dashboard.render(Game.state);
     Shop.render(Game.state);
     this.applyTheme(Game.state.settings.darkMode);
     this.syncDarkModeToggle();
 
-    UI.showToast("Game telah di-reset ke awal.", "success");
+    UI.showToast(
+      `Kedai "${Game.activeShopName}" telah di-reset ke awal.`,
+      "success",
+    );
   },
 
   /* ===================== DARK MODE ===================== */
@@ -182,7 +188,7 @@ const Settings = {
   handleToggleDarkMode(isDark) {
     Game.state.settings.darkMode = isDark;
     this.applyTheme(isDark);
-    Storage.save(Game.state);
+    Storage.saveShopState(Game.activeShopId, Game.state);
   },
 
   /** Menerapkan/melepas tema gelap ke seluruh halaman lewat atribut data-theme. */

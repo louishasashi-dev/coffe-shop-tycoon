@@ -1,0 +1,78 @@
+/* =========================================================
+   WALLET.CSS
+   Hanya berisi style untuk elemen-elemen yang menampilkan
+   saldo Wallet (rekening bersama semua kedai):
+     - widget di sidebar (terlihat di semua tab game)
+     - banner di screen "Kedai Saya"
+   Tampilan hero saldo di Dashboard memakai class dari
+   dashboard.css (.dashboard-hero__amount), tidak diulang di sini.
+   ========================================================= */
+
+/* ---------- WIDGET SALDO DI SIDEBAR ---------- */
+.wallet-widget {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-sm);
+}
+
+.wallet-widget__icon {
+  font-size: 1.3rem;
+}
+
+.wallet-widget__label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.wallet-widget__amount {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-cream-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- BANNER SALDO DI SCREEN "KEDAI SAYA" ---------- */
+.wallet-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+}
+
+.wallet-banner__icon {
+  font-size: 1.1rem;
+}
+
+.wallet-banner__label {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.wallet-banner__amount {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--color-coffee);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  .wallet-widget {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .wallet-widget__label {
+    display: none;
+  }
+}

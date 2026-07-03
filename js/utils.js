@@ -4,15 +4,14 @@
  * UTILS.JS
  * Kumpulan fungsi utilitas umum yang TIDAK bergantung pada
  * state game atau DOM tertentu. Modul lain (game.js, dashboard.js,
- * shop.js, dst) memanggil fungsi-fungsi ini, bukan sebaliknya.
+ * shop.js, resource.js, kedai.js, dst) memanggil fungsi-fungsi ini,
+ * bukan sebaliknya.
  */
 
 const Utils = {
   /**
    * Format angka uang ke format Rupiah.
-   * Angka kecil ditampilkan utuh dengan pemisah titik (Rp1.234),
-   * angka besar otomatis disingkat (Jt/M/T) agar tetap mudah dibaca
-   * saat income sudah sangat besar di akhir permainan.
+   * Angka besar disingkat (Jt/M/T) agar tetap mudah dibaca.
    * @param {number} amount
    * @returns {string}
    */
@@ -25,9 +24,9 @@ const Utils = {
     }
 
     const units = [
-      { value: 1_000_000_000_000, suffix: "T" }, // Triliun
-      { value: 1_000_000_000, suffix: "M" }, // Miliar
-      { value: 1_000_000, suffix: "Jt" }, // Juta
+      { value: 1_000_000_000_000, suffix: "T" },
+      { value: 1_000_000_000, suffix: "M" },
+      { value: 1_000_000, suffix: "Jt" },
     ];
 
     for (const unit of units) {
@@ -37,12 +36,11 @@ const Utils = {
       }
     }
 
-    return "Rp" + rounded.toLocaleString("id-ID"); // fallback (seharusnya tidak tercapai)
+    return "Rp" + rounded.toLocaleString("id-ID");
   },
 
   /**
    * Format angka biasa (bukan uang) dengan pemisah ribuan.
-   * Dipakai untuk statistik seperti "Total Kopi Terjual".
    * @param {number} value
    * @returns {string}
    */
@@ -52,6 +50,7 @@ const Utils = {
 
   /**
    * Format detik menjadi string waktu HH:MM:SS.
+   * Dipakai untuk waktu bermain (play time).
    * @param {number} totalSeconds
    * @returns {string}
    */
@@ -68,9 +67,56 @@ const Utils = {
   },
 
   /**
+   * Format detik menjadi durasi singkat yang mudah dibaca manusia.
+   * Dipakai untuk menampilkan stok bahan baku (mis. "1j 45m").
+   * Berbeda dari formatTime() yang selalu menampilkan HH:MM:SS penuh,
+   * formatDuration() hanya menampilkan unit yang relevan.
+   * @param {number} totalSeconds
+   * @returns {string}
+   */
+  formatDuration(totalSeconds) {
+    const safe = Math.max(0, Math.floor(totalSeconds));
+    if (safe <= 0) return "Habis";
+
+    const hours = Math.floor(safe / 3600);
+    const minutes = Math.floor((safe % 3600) / 60);
+    const seconds = safe % 60;
+
+    if (hours > 0) {
+      return minutes > 0 ? `${hours}j ${minutes}m` : `${hours}j`;
+    }
+    if (minutes > 0) {
+      return seconds > 0 ? `${minutes}m ${seconds}d` : `${minutes}m`;
+    }
+    return `${seconds}d`;
+  },
+
+  /**
+   * Format timestamp (ms) menjadi tanggal singkat, mis. "29 Jun 2026".
+   * Dipakai oleh kedai.js untuk menampilkan tanggal kedai dibuat.
+   * @param {number} timestamp
+   * @returns {string}
+   */
+  formatDateShort(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  },
+
+  /**
+   * Membuat ID unik sederhana berbasis waktu + angka acak.
+   * Dipakai storage.js untuk memberi ID pada setiap kedai baru.
+   * @returns {string}
+   */
+  generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  },
+
+  /**
    * Angka acak bulat antara min dan max (inklusif).
-   * Disiapkan untuk fitur acak di tahap-tahap berikutnya
-   * (misalnya event pelanggan acak).
    * @param {number} min
    * @param {number} max
    * @returns {number}
@@ -81,7 +127,6 @@ const Utils = {
 
   /**
    * Membatasi nilai agar selalu berada di antara min dan max.
-   * Akan dipakai shop.js untuk membatasi level upgrade ke maksimum.
    * @param {number} value
    * @param {number} min
    * @param {number} max
@@ -92,9 +137,7 @@ const Utils = {
   },
 
   /**
-   * Deep clone sederhana untuk objek yang aman di-JSON-kan
-   * (state game, daftar upgrade, dll). Dipakai storage.js & shop.js
-   * agar tidak tidak sengaja memodifikasi objek asli secara referensi.
+   * Deep clone sederhana untuk objek yang aman di-JSON-kan.
    * @param {object} obj
    * @returns {object}
    */

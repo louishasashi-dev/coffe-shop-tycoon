@@ -1,0 +1,189 @@
+/* =========================================================
+   RESOURCE.CSS
+   Hanya berisi style untuk panel Bahan Baku di Dashboard:
+   banner "produksi berhenti", grid resource, dan kartu
+   setiap bahan baku (Listrik, Air, Biji Kopi, Susu).
+   ========================================================= */
+
+/* ---------- PANEL BAHAN BAKU (WRAPPER) ---------- */
+.resource-panel {
+  /* Card dasar sudah dari global.css, di sini hanya layout internal */
+}
+
+.resource-panel__header {
+  margin-bottom: var(--space-4);
+}
+
+.resource-panel__title {
+  font-size: 1.05rem;
+  margin-bottom: var(--space-1);
+}
+
+.resource-panel__subtitle {
+  font-size: 0.82rem;
+}
+
+/* ---------- BANNER: PRODUKSI BERHENTI ---------- */
+.production-halted-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background-color: rgba(192, 57, 43, 0.08);
+  border: 1px solid rgba(192, 57, 43, 0.3);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-4);
+  animation: haltedPulse 2s ease-in-out infinite;
+}
+
+.halted-banner__icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.halted-banner__text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-danger);
+  line-height: 1.4;
+}
+
+.halted-banner__resources {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+@keyframes haltedPulse {
+  0%,
+  100% {
+    border-color: rgba(192, 57, 43, 0.3);
+  }
+  50% {
+    border-color: rgba(192, 57, 43, 0.7);
+  }
+}
+
+/* ---------- GRID KARTU RESOURCE ---------- */
+.resource-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: var(--space-3);
+}
+
+/* ---------- KARTU RESOURCE ---------- */
+.resource-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  /* Override hover lift dari .card karena kartu ini sudah padat konten */
+  transition: border-color var(--transition-base);
+}
+
+/* Status: stok menipis (peringatan) */
+.resource-card--warning {
+  border-color: var(--color-caramel);
+}
+
+.resource-card--warning:hover {
+  border-color: var(--color-latte);
+}
+
+/* Status: stok habis (bahaya) */
+.resource-card--empty {
+  border-color: var(--color-danger);
+  animation: emptyCardPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes emptyCardPulse {
+  0%,
+  100% {
+    border-color: rgba(192, 57, 43, 0.4);
+  }
+  50% {
+    border-color: rgba(192, 57, 43, 1);
+  }
+}
+
+/* ---------- ISI KARTU RESOURCE ---------- */
+.resource-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.resource-card__icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.resource-card__name {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--color-espresso);
+}
+
+.resource-card__time {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.resource-card__time--empty {
+  color: var(--color-danger);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+/* ---------- PROGRESS BAR ---------- */
+.resource-card__progress {
+  width: 100%;
+  height: 6px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-border);
+  overflow: hidden;
+}
+
+.resource-card__progress-bar {
+  height: 100%;
+  border-radius: var(--radius-sm);
+  transition: width 1s linear; /* smooth setiap detik berkurang */
+}
+
+.resource-card__progress-bar--ok {
+  background-image: linear-gradient(90deg, var(--color-success), #7cb87b);
+}
+
+.resource-card__progress-bar--warning {
+  background-image: linear-gradient(90deg, var(--color-caramel), #e8c06d);
+}
+
+.resource-card__progress-bar--empty {
+  background-color: var(--color-danger);
+  width: 0% !important;
+}
+
+/* ---------- TOMBOL ISI ULANG ---------- */
+.resource-card__restock-btn {
+  width: 100%;
+  font-size: 0.88rem;
+  padding: var(--space-2) var(--space-3);
+}
+
+/* Harga dalam modal isi ulang */
+.resource-option__price {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.88rem;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 480px) {
+  .resource-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

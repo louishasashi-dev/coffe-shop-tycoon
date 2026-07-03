@@ -1,0 +1,380 @@
+/* =========================================================
+   KEDAI.CSS
+   Style untuk screen "Kedai Saya":
+   - Layout selector screen
+   - Panel ekspansi (syarat buka kedai baru)
+   - Item syarat (req-item)
+   - Kartu kedai (enhanced: badge MAX, progress bar)
+   ========================================================= */
+
+/* ---------- LAYOUT SCREEN SELECTOR ---------- */
+.kedai-selector {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-6) var(--space-4);
+}
+
+.kedai-selector__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+  max-width: 480px;
+}
+
+.kedai-selector__header .coffee-cup {
+  width: 56px;
+  height: 42px;
+  background-color: var(--color-coffee);
+}
+
+.kedai-selector__header .coffee-cup__handle {
+  border-color: var(--color-coffee);
+}
+
+/* Container panel ekspansi: full-width tapi dibatasi agar enak dibaca */
+.kedai-selector__expansion {
+  width: 100%;
+  max-width: 720px;
+}
+
+/* ---------- PANEL EKSPANSI ---------- */
+.expansion-panel {
+  /* Memakai .card dari global.css, override hover lift agar panel tidak bergerak */
+  transition: none;
+}
+
+.expansion-panel:hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Tampilan saat belum ada kedai (buka kedai pertama) */
+.expansion-panel__free {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+  padding: var(--space-3) 0;
+}
+
+.expansion-panel__free-icon {
+  font-size: 2.8rem;
+}
+
+.expansion-panel__free h3 {
+  font-size: 1.2rem;
+}
+
+.expansion-panel__create-btn {
+  /* Tombol full-width di dalam panel */
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+/* Header panel (title + badge "Siap Ekspansi") */
+.expansion-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.expansion-panel__title {
+  font-size: 1.1rem;
+}
+
+.expansion-panel__cost {
+  font-size: 0.88rem;
+  margin-top: var(--space-1);
+}
+
+.expansion-panel__ready-badge {
+  flex-shrink: 0;
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  background-color: rgba(91, 140, 90, 0.12);
+  border: 1px solid rgba(91, 140, 90, 0.35);
+  color: var(--color-success);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Container untuk semua section syarat */
+.expansion-panel__requirements {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+/* ---------- SECTION SYARAT ---------- */
+.req-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Label judul section, mis. "✅ Semua upgrade harus MAX" */
+.req-section__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.req-section__check {
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+/* Grid item syarat (bisa beberapa di satu section) */
+.req-section__items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-left: var(--space-5);
+}
+
+/* ---------- ITEM SYARAT (req-item) ---------- */
+.req-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+}
+
+.req-item--ok {
+  background-color: rgba(91, 140, 90, 0.06);
+  border-color: rgba(91, 140, 90, 0.25);
+}
+
+.req-item--fail {
+  background-color: rgba(192, 57, 43, 0.04);
+  border-color: rgba(192, 57, 43, 0.2);
+}
+
+/* Baris konten: ikon + nama + status */
+.req-item__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.req-item__icon {
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.req-item__name {
+  flex: 1;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.req-item__status {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.req-item--ok .req-item__status {
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+/* Progress bar dalam req-item (level upgrade / saldo wallet) */
+.req-item__progress {
+  height: 5px;
+  border-radius: 999px;
+  background-color: var(--color-border);
+  overflow: hidden;
+}
+
+.req-item__progress-bar {
+  height: 100%;
+  background-image: linear-gradient(
+    90deg,
+    var(--color-caramel),
+    var(--color-coffee-light)
+  );
+  border-radius: 999px;
+  transition: width var(--transition-base);
+}
+
+/* Warna berbeda untuk progress bar saldo wallet */
+.req-item__progress-bar--wallet {
+  background-image: linear-gradient(90deg, var(--color-success), #7cb87b);
+}
+
+/* ---------- EMPTY STATE (saat belum ada kedai) ---------- */
+.kedai-empty-state {
+  max-width: 480px;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+/* ---------- DAFTAR KEDAI ---------- */
+.kedai-list {
+  width: 100%;
+  max-width: 960px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-4);
+}
+
+/* ---------- KARTU KEDAI ---------- */
+.kedai-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Kartu yang semua upgrade-nya sudah MAX -- beri border caramel emas */
+.kedai-card--maxed {
+  border-color: var(--color-caramel);
+  box-shadow: 0 0 0 1px rgba(212, 162, 76, 0.25);
+}
+
+.kedai-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.kedai-card__icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.kedai-card__info {
+  flex: 1;
+  min-width: 0; /* supaya text-overflow ellipsis bekerja */
+}
+
+.kedai-card__name {
+  font-weight: 700;
+  color: var(--color-espresso);
+  font-size: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kedai-card__meta {
+  font-size: 0.78rem;
+  margin-top: 2px;
+}
+
+/* Badge "⭐ MAX" di pojok kanan atas kartu */
+.kedai-card__max-badge {
+  flex-shrink: 0;
+  display: inline-block;
+  padding: 2px 8px;
+  background-color: rgba(212, 162, 76, 0.12);
+  border: 1px solid rgba(212, 162, 76, 0.35);
+  color: var(--color-caramel);
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.kedai-card__income {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-success);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Progress bar upgrade di kartu kedai */
+.kedai-card__upgrade-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.kedai-card__upgrade-bar-wrap {
+  height: 5px;
+  border-radius: 999px;
+  background-color: var(--color-border);
+  overflow: hidden;
+}
+
+.kedai-card__upgrade-bar {
+  height: 100%;
+  background-image: linear-gradient(
+    90deg,
+    var(--color-caramel),
+    var(--color-coffee-light)
+  );
+  border-radius: 999px;
+  transition: width var(--transition-base);
+}
+
+.kedai-card__upgrade-text {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.kedai-card__upgrade-text--maxed {
+  color: var(--color-caramel);
+  font-weight: 600;
+}
+
+/* Baris tombol di bawah kartu */
+.kedai-card__actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.kedai-card__open-btn {
+  flex: 1;
+}
+
+.kedai-card__delete-btn {
+  color: var(--color-text-muted);
+}
+
+.kedai-card__delete-btn:hover {
+  color: var(--color-danger);
+  background-color: rgba(192, 57, 43, 0.08);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 640px) {
+  .expansion-panel__header {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .req-section__items {
+    padding-left: var(--space-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .kedai-list {
+    grid-template-columns: 1fr;
+  }
+}

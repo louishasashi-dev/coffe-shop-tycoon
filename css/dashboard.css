@@ -1,11 +1,15 @@
 /* =========================================================
    DASHBOARD.CSS
    Hanya berisi style untuk halaman Dashboard:
-   hero card (total uang), grid statistik cepat,
-   dan panel statistik detail.
+   hero card (saldo wallet + income kedai ini), grid statistik
+   cepat, dan panel statistik detail.
+
+   CATATAN: animasi "value-pulse" (dipakai saat saldo berubah)
+   sudah dipindahkan ke global.css karena kini dipakai juga oleh
+   wallet.js di luar halaman Dashboard (sidebar, screen Kedai Saya).
    ========================================================= */
 
-/* ---------- HERO CARD: TOTAL UANG ---------- */
+/* ---------- HERO CARD: SALDO WALLET ---------- */
 .dashboard-hero {
   text-align: center;
   padding: var(--space-6);
@@ -33,27 +37,6 @@
   color: var(--color-success);
   font-weight: 600;
   font-size: 0.95rem;
-}
-
-/* Animasi "pulse" saat nilai uang bertambah / berubah.
-   Class ini ditambahkan & dilepas lewat JS (lihat game.js / dashboard.js). */
-.value-pulse {
-  animation: valuePulse 0.4s ease;
-}
-
-@keyframes valuePulse {
-  0% {
-    transform: scale(1);
-    color: var(--color-success);
-  }
-  50% {
-    transform: scale(1.06);
-    color: var(--color-success);
-  }
-  100% {
-    transform: scale(1);
-    color: var(--color-espresso);
-  }
 }
 
 /* ---------- GRID STATISTIK CEPAT ---------- */
