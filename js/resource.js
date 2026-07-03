@@ -29,9 +29,9 @@ const RESOURCE_DEFINITIONS = [
     maxStock: 86400, // cap 24 jam
     warningThreshold: 600, // peringatan saat < 10 menit tersisa
     refillOptions: [
-      { label: "1 Jam", seconds: 3600, costMultiplier: 300 },
-      { label: "8 Jam", seconds: 28800, costMultiplier: 2000 },
-      { label: "24 Jam", seconds: 86400, costMultiplier: 5400 },
+      { label: "1 Jam", seconds: 3600, costMultiplier: 150 },
+      { label: "8 Jam", seconds: 28800, costMultiplier: 1000 },
+      { label: "24 Jam", seconds: 86400, costMultiplier: 2700 },
     ],
   },
   {
