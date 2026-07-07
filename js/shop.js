@@ -630,7 +630,7 @@ const UPGRADE_DEFINITIONS = [
     icon: "💵",
     basePrice: 150000000,
     priceMultiplier: 1.9,
-    maxLevel: 50,
+    maxLevel: 3,
     incomePerLevel: 500000,
   },
 ];
