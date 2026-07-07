@@ -623,6 +623,16 @@ const UPGRADE_DEFINITIONS = [
     incomePerLevel: 12000,
     requires: { id: "globalFranchise", level: 5 },
   },
+  {
+    id: "Sponsored",
+    category: "business",
+    name: "Sponsored",
+    icon: "💵",
+    basePrice: 150000000,
+    priceMultiplier: 1.9,
+    maxLevel: 50,
+    incomePerLevel: 500000,
+  },
 ];
 
 const Shop = {

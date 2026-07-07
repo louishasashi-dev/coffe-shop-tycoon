@@ -25,11 +25,11 @@ const RESOURCE_DEFINITIONS = [
     id: "electricity",
     name: "Listrik",
     icon: "⚡",
-    initialStock: 3600, // 1 jam gratis saat kedai baru dibuka
+    initialStock: 43200, // 1 jam gratis saat kedai baru dibuka
     maxStock: 86400, // cap 24 jam
     warningThreshold: 600, // peringatan saat < 10 menit tersisa
     refillOptions: [
-      { label: "1 Jam", seconds: 3600, costMultiplier: 150 },
+      { label: "1 Jam", seconds: 3600, costMultiplier: 90 },
       { label: "8 Jam", seconds: 28800, costMultiplier: 1000 },
       { label: "24 Jam", seconds: 86400, costMultiplier: 2700 },
     ],
@@ -38,11 +38,11 @@ const RESOURCE_DEFINITIONS = [
     id: "water",
     name: "Air",
     icon: "💧",
-    initialStock: 3600,
+    initialStock: 43200,
     maxStock: 86400,
     warningThreshold: 600,
     refillOptions: [
-      { label: "1 Jam", seconds: 3600, costMultiplier: 150 },
+      { label: "1 Jam", seconds: 3600, costMultiplier: 50 },
       { label: "8 Jam", seconds: 28800, costMultiplier: 1000 },
       { label: "24 Jam", seconds: 86400, costMultiplier: 2700 },
     ],
@@ -51,11 +51,11 @@ const RESOURCE_DEFINITIONS = [
     id: "coffeeBeans",
     name: "Biji Kopi",
     icon: "☕",
-    initialStock: 1800, // 30 menit gratis
+    initialStock: 43200,
     maxStock: 43200, // cap 12 jam
     warningThreshold: 300, // peringatan saat < 5 menit
     refillOptions: [
-      { label: "30 Menit", seconds: 1800, costMultiplier: 100 },
+      { label: "30 Menit", seconds: 3600, costMultiplier: 20 },
       { label: "4 Jam", seconds: 14400, costMultiplier: 600 },
       { label: "12 Jam", seconds: 43200, costMultiplier: 1500 },
     ],
@@ -64,11 +64,11 @@ const RESOURCE_DEFINITIONS = [
     id: "milk",
     name: "Susu",
     icon: "🥛",
-    initialStock: 1800,
+    initialStock: 43200,
     maxStock: 43200,
     warningThreshold: 300,
     refillOptions: [
-      { label: "30 Menit", seconds: 1800, costMultiplier: 80 },
+      { label: "30 Menit", seconds: 3600, costMultiplier: 20 },
       { label: "4 Jam", seconds: 14400, costMultiplier: 480 },
       { label: "12 Jam", seconds: 43200, costMultiplier: 1200 },
     ],
